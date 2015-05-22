@@ -6,6 +6,11 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+/**
+ * Dieses Programm dient der Verbindung zu einem Server als Client.
+ * Es koennen Nachrichten an den Server geschickt werden und Nachrichten
+ * empfangen werden.
+ */
 public class UDPClient_main 
 {
 	public static void main(String[] args) 
@@ -28,6 +33,13 @@ public class UDPClient_main
 	            {
 	            	System.out.println("Konnte nachricht nicht senden.");
 	            	e.printStackTrace();
+	            	clientOn = false;
+	            }
+	            catch(SocketTimeoutException e)
+	            {
+	            	System.out.println("Timeout der Verbindung.");
+	            	e.printStackTrace();
+	            	clientOn = false;
 	            }
 	            
 	            try  
@@ -35,7 +47,7 @@ public class UDPClient_main
 	                client.nachrichtEmpfangen();
 	            }
 	            catch(IOException e) {
-	                System.out.printf("\nTimeout.\n");
+	                System.out.println("Timeout.");
 	                clientOn = false;
 	            }
 	            client.closeSocket();

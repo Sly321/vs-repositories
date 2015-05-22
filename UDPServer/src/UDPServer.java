@@ -4,49 +4,74 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
-public class UDPServer {
-
-	private final static int PACKETSIZE = 1000;
+/**
+ * This class is using a socket to create a server.
+ * Clients can contact the server by the given port,
+ * the server will answer the clients with their message
+ * back. The server has a timeout (30 seconds default)
+ * after the timeout the server closed and the socketport
+ * is set free for other programs.
+ */
+public class UDPServer 
+{
+	/** The size of the messages that can the Server handle */
+	private int packetsize = 1000;
+	/** The port where the server is reachable */
 	private int port;
+	/** The socket to communicate with client */
 	private DatagramSocket socket;
-	private boolean serverOn = true;
 
-	public UDPServer(int _port) {
+	/**
+	 * Contructor for the UDPServer, its building the Socket and throws
+	 * an Exception if something fails. Server timeout after 30 seconds.
+	 * @param _port the port where the server is reachable
+	 * @throws SocketException is thrown when the socket initiation fails
+	 */
+	public UDPServer(int _port) throws SocketException
+	{
 		port = _port;
-	    try {
-	    	socket = new DatagramSocket(port);
-	    	socket.setSoTimeout(30000);
-	    	System.out.println("Der Server steht nun bereit unter dem Port " + port + ".");
-	    	System.out.println("Nach 30s ohne Daten erhalten zu haben wird der Socket geschlossen.");
-	    } catch(SocketException se) {
-	    	System.out.println(se);
-	    }
+    	socket = new DatagramSocket(port);
+    	socket.setSoTimeout(30000);
+    	System.out.println("Der Server steht nun bereit unter dem Port " + port + ".");
+    	System.out.println("Nach 30s ohne Daten erhalten zu haben wird der Socket geschlossen.");
 	}
 
-	public void getMessageAndSendBack()  {
-		while(serverOn) {
-			try {
-				byte[] data = new byte[PACKETSIZE];
-				DatagramPacket packet = new DatagramPacket(data, PACKETSIZE);
-				socket.receive(packet);
-				//Schreibe PaketInformationen aus...
-				System.out.println(packet.getAddress() + " " + packet.getPort() + ": " + new String(packet.getData()));
-				//schicke paket wieder zurück.
-				socket.send(packet);
-				System.out.println("Nachricht wurde erfolgreich an den Sender zurueck geschickt.");
-			} catch(SocketTimeoutException e) {
-				System.out.println("Socket wird wegen timeout geschlossen");
-				socket.close();
-				serverOn = false;
-			} catch(IOException e) {
-				System.out.println("IOException: " + e);
-			}
-		}
+	/**
+	 * Contructor for the UDPServer, its building the Socket and throws
+	 * an Exception if something fails. Server timeout can be set manually.
+	 * @param _port the port where the server is reachable
+	 * @param _timeout the time in ms the server waits for a request
+	 * @throws SocketException is thrown when the socket initiation fails
+	 */
+	public UDPServer(int _port, int _timeout) throws SocketException
+	{
+		port = _port;
+    	socket = new DatagramSocket(port);
+    	socket.setSoTimeout(_timeout);
+    	System.out.println("Der Server steht nun bereit unter dem Port " + port + ".");
+    	System.out.println("Nach " + _timeout/1000 + "Sekunden ohne Daten erhalten zu haben wird der Socket geschlossen.");
 	}
-	
-	public static void main(String[] args) {
-        UDPServer server = new UDPServer(2000); //
-        server.getMessageAndSendBack();
-        System.out.println("Programm beendet.");
-    }
+
+	/**
+	 * Waiting for receiving a message and sending the message back to the client where it came from.
+	 * @throws SocketTimeoutException is thrown if no message is received after the given timeout
+	 * @throws IOException is thrown if there is a problem by reading or sending the message
+	 */
+	public void getMessageAndSendBack() throws SocketTimeoutException, IOException
+	{
+		byte[] data = new byte[packetsize];
+		DatagramPacket packet = new DatagramPacket(data, packetsize);
+		socket.receive(packet);
+		System.out.println(packet.getAddress() + " " + packet.getPort() + ": " + new String(packet.getData()));
+		socket.send(packet);
+		System.out.println("Nachricht wurde erfolgreich an den Sender zurueck geschickt.");
+	}
+
+	/**
+	 * Closing the socket and free the port for other programs.
+	 */
+	public void closeSocket() 
+	{
+		socket.close();
+	}
 }
