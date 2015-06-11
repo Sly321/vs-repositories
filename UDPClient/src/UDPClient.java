@@ -30,8 +30,9 @@ public class UDPClient {
 	 * Socket erstellt.
 	 * @param die_adresse Die Addresse auf welche man zugreifen will.
 	 * @throws UnknownHostException Falls die Verbindugn schieflaeuft wurd diese Exception geschmissen.
+	 * @throws SocketException Falls etwas mit der Socket Erstellung schieflaeuft wird diese Exception geschmissen.
 	 */
-	public UDPClient(String die_adresse) throws UnknownHostException {
+	public UDPClient(String die_adresse) throws UnknownHostException, SocketException {
 		adresse = InetAddress.getByName(die_adresse);
 		socket = new DatagramSocket();
 		port = 9876;

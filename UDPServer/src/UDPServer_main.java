@@ -11,9 +11,10 @@ import java.net.SocketTimeoutException;
 public class UDPServer_main {
 
 	public static void main(String[] args) {
+		UDPServer server = null;
 		try 
 		{
-			UDPServer server = new UDPServer(9876);
+			server = new UDPServer(9999);
 		}
 		catch(SocketException e)
 		{
@@ -25,9 +26,10 @@ public class UDPServer_main {
 
 		while(serverOn) 
 		{
+			System.out.println("ServerOn: " + serverOn);
 	        try
 	        {
-	        	 server.getMessageAndSendBack();
+	        	server.getMessageAndSendBack();
 	        }
 	        catch(SocketTimeoutException e) 
 			{
@@ -43,7 +45,7 @@ public class UDPServer_main {
 				server.closeSocket();
 				serverOn = false;
 			}
-	        System.out.println("Programm beendet.");
     	}
+		System.out.println("Programm beendet.");
     }
 }
